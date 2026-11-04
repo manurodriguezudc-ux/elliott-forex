@@ -1,6 +1,12 @@
 name: Actualizar velas Forex H1 H4
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'snapshot.mjs'
+      - '.github/workflows/update.yml'
+      - 'fetch.mjs'
   schedule:
     - cron: '35 8,13,20 * * 1-5'
       timezone: 'Europe/Madrid'
