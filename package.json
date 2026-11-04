@@ -1,0 +1,9 @@
+{
+  "name": "elliott-forex-data-bridge",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Public verified OHLC snapshot for an Elliott watch task (no orders)",
+  "scripts": { "update": "node fetch.mjs", "test": "node --test" },
+  "dependencies": { "dukascopy-node": "1.51.1" }
+}
