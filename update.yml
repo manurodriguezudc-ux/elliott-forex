@@ -1,0 +1,40 @@
+name: Actualizar velas Forex H1 H4
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '35 8,13,20 * * 1-5'
+      timezone: 'Europe/Madrid'
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: elliott-pages
+  cancel-in-progress: false
+jobs:
+  collect-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Descargar código
+        uses: actions/checkout@v4
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependencias
+        run: npm install --no-audit --no-fund
+      - name: Descargar OHLC de Dukascopy y preparar informes
+        run: npm run update
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Subir páginas estáticas
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './docs'
+      - name: Publicar páginas
+        id: deploy
+        uses: actions/deploy-pages@v4
