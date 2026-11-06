@@ -7,6 +7,9 @@ on:
       - 'snapshot.mjs'
       - '.github/workflows/update.yml'
       - 'fetch.mjs'
+      - 'quality.mjs'
+      - 'quality.test.mjs'
+      - 'snapshot.mjs'
   schedule:
     # Doble comprobación antes de cada informe por si GitHub retrasa una ejecución.
     - cron: '20,40 8,13,20 * * 1-5'
@@ -21,7 +24,7 @@ concurrency:
 jobs:
   collect-and-publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 40
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
@@ -34,10 +37,14 @@ jobs:
           node-version: '22'
       - name: Instalar dependencias
         run: npm install --no-audit --no-fund
+      - name: Comprobar heurísticas antes de descargar
+        run: npm test
       - name: Descargar OHLC de Dukascopy y preparar informes
         run: npm run update
       - name: Exportar velas a GitHub para ChatGPT
         run: node snapshot.mjs
+      - name: Evaluar contexto D1 H4 y confirmación M15
+        run: node quality.mjs
       - name: Guardar datos OHLC en el repositorio
         run: |
           git config user.name 'github-actions[bot]'
