@@ -12,7 +12,7 @@ export async function writeMarketSnapshot(sourceDir = 'docs/data', destinationDi
   await fs.mkdir(destinationDir, { recursive: true });
   const coverage = [];
   for (const info of summary.status) {
-    if (!/^[A-Z]{3}\/\w{3}$/.test(info.pair) || !['H1', 'H4'].includes(info.tf)) {
+    if (!/^[A-Z]{3}\/\w{3}$/.test(info.pair) || !['M15', 'H1', 'H4', 'D1'].includes(info.tf)) {
       throw new Error(`Par o temporalidad inesperados: ${info.pair} ${info.tf}`);
     }
     const name = `${info.pair.replace('/', '')}_${info.tf}.json`;
@@ -41,8 +41,8 @@ export async function writeMarketSnapshot(sourceDir = 'docs/data', destinationDi
     verified: coverage.filter(x => x.fresh).length,
     coverage,
     candidates: Array.isArray(summary.candidates) ? summary.candidates : [],
-    description: 'Datos OHLC BID de Dukascopy, velas cerradas en UTC. Los candidatos son heurísticos y NO confirman ondas Elliott.',
-    candleFiles: 'market-data/{BASEQUOTE}_{H1|H4}.json',
+    description: 'Datos OHLC BID de Dukascopy, velas cerradas en UTC. M15 sirve para confirmar la corrección y D1 para contexto de fondo; los candidatos H1/H4 son heurísticos y NO confirman ondas Elliott.',
+    candleFiles: 'market-data/{BASEQUOTE}_{M15|H1|H4|D1}.json',
     candleCountPerFileMax: 180
   };
   await fs.writeFile(path.join(destinationDir, 'index.json'), JSON.stringify(manifest));
